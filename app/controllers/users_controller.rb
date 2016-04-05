@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
-  before_action :check_edit
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
-
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_profile, :update_profile]
+  before_action :check_admin, only: [:index, :new, :edit, :update, :create, :destroy]
+  before_action :check_self, only: [:edit_profile, :update_profile]
+  #before_action :check_admin_or_self, only: [:show]
 
   def index
     @users = User.ordering.page(params[:page])
@@ -10,13 +11,28 @@ class UsersController < ApplicationController
   def show
   end
 
-
   def new
     @user = User.new
   end
 
-
   def edit
+  end
+
+  def edit_profile
+  end
+
+  def update_profile
+    if (@user.authenticate(params[:user][:old_password]))
+      if @user.update(user_params)
+        redirect_to @user, notice: 'Пользователь изменен.'
+      else
+        render :edit_profile
+      end
+    else
+      #render :action => :edit_profile, :danger => "fsa"
+      flash[:danger] = 'Неверный пароль'
+      render :edit_profile
+    end
   end
 
   def create
@@ -53,12 +69,20 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    attrs = [:name, :email, :password, :password_confirmation]
+    attrs = [:name, :email, :password, :password_confirmation, :country_id]
     attrs << :role if @current_user.try(:admin?)
     params.require(:user).permit(attrs)
   end
 
-  def check_edit
-    render_error unless User.edit_by?(@current_user)
+  def check_admin_or_self
+    render_error unless User.by_admin?(@current_user) || @user.by_self?(@current_user)
+  end
+
+  def check_admin
+    render_error unless User.by_admin?(@current_user)
+  end
+
+  def check_self
+    render_error unless @user.by_self?(@current_user)
   end
 end

@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
   has_secure_password
 
+  belongs_to :country
+
 ROLES = %w(Пользователь Администратор)
 
 validates :name, presence: true, length: {minimum: 2, maximum: 255}
@@ -26,10 +28,12 @@ def admin?
   role == 1
 end
 
+def self.by_admin?(u)
+  u.try(:admin?)
+end
 
-  def self.edit_by?(u)
-    u.try(:admin?)
-  end
-
+def by_self?(u)
+  self == u
+end
 
 end

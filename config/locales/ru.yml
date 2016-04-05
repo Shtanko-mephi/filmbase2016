@@ -20,6 +20,7 @@ ru:
         email: Адрес электронной почты
         password: Пароль
         password_confirmation: Пароль (повторно)
+        old_password: Текущий пароль
         role: Роль
       genre:
         name: Название

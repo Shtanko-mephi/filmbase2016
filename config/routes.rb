@@ -3,7 +3,15 @@ Rails.application.routes.draw do
   resources :people
   resources :countries
   resources :genres
-  resources :users
+  #resources :users
+
+  resources :users do
+    member do
+      get :edit_profile
+      patch :update_profile
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -18,6 +26,8 @@ Rails.application.routes.draw do
   get 'login' => 'sessions#new', as: :login
   post 'login' => 'sessions#create'
   get 'logout' => 'sessions#destroy', as: :logout
+
+  #get 'profile' => 'users#edit_profile'
 
   # Example resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
