@@ -1,3 +1,6 @@
+# Баги
+При update другого пользователя пароль менять нельзя, а при create можно
+
 # README
 
 Для запуска приложения `bundle; bundle exec rake db:create db:migrate db:seed`

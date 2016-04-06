@@ -1,4 +1,35 @@
-.page-header
-  %h1 Редактирование пользователя
-
-= render 'form'
+= form_for @user do |f|
+  =error_messages_for @user
+  .form-group
+    = f.label :name
+    = f.text_field :name, class: 'form-control'
+  .form-group
+    = f.label :email
+    = f.email_field :email, class: 'form-control'
+  .form-group
+    =f.label :country_id
+    =f.select :country_id, Country.ordering.map{|c| [c.name,c.id]},{:include_blank => true}, class: 'form-control'
+  .form-group
+    =f.label :birthday
+    =f.text_field :birthday, class: 'form-control', data: {masked: 'date'}, value: (l(@user.birthday) if @user.birthday)
+  .form-group
+    = f.label :info
+    = f.text_area :info, class: 'form-control'
+  -if @user == @current_user
+    .form-group
+      = f.label :password
+      = f.password_field :password, class: 'form-control'
+    .form-group
+      = f.label :password_confirmation
+      = f.password_field :password_confirmation, class: 'form-control'
+    .form-group
+      = f.label :old_password
+      = f.password_field :old_password, class: 'form-control'
+  -elsif @current_user.try(:admin?)
+    .form-group
+      =f.label :role
+      =f.select :role, User::ROLES.map.with_index{|name,i| [name,i]}, {},class: 'form-control'
+  .actions
+    = f.submit nil, class: 'btn btn-primary'
+    = button_tag t('undo'), type: :reset, class: 'btn btn-default'
+    = link_to t('cancel'), @user, class: 'btn btn-default'

@@ -3,14 +3,7 @@ Rails.application.routes.draw do
   resources :people
   resources :countries
   resources :genres
-  #resources :users
-
-  resources :users do
-    member do
-      get :edit_profile
-      patch :update_profile
-    end
-  end
+  resources :users
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

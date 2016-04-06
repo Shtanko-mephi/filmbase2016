@@ -1,8 +1,7 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_profile, :update_profile]
-  before_action :check_admin, only: [:index, :new, :edit, :update, :create, :destroy]
-  before_action :check_self, only: [:edit_profile, :update_profile]
-  #before_action :check_admin_or_self, only: [:show]
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :check_admin, only: [:index, :destroy]
+  before_action :check_admin_or_self, only: [:show, :edit, :update]
 
   def index
     @users = User.ordering.page(params[:page])
@@ -18,25 +17,8 @@ class UsersController < ApplicationController
   def edit
   end
 
-  def edit_profile
-  end
-
-  def update_profile
-    if (@user.authenticate(params[:user][:old_password]))
-      if @user.update(user_params)
-        redirect_to @user, notice: 'Пользователь изменен.'
-      else
-        render :edit_profile
-      end
-    else
-      #render :action => :edit_profile, :danger => "fsa"
-      flash[:danger] = 'Неверный пароль'
-      render :edit_profile
-    end
-  end
-
   def create
-    @user = User.new(user_params)
+      @user = User.new(user_params)
     if @user.save
       if @current_user
         redirect_to @user, notice: 'Пользователь создан'
@@ -50,10 +32,23 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update(user_params)
-      redirect_to @user, notice: 'Пользователь изменен.'
-    else
-      render :edit
+    if (@user == @current_user)
+      if (@user.authenticate(params[:user][:old_password]))
+        if @user.update(user_params)
+          redirect_to @user, notice: 'Пользователь изменен.'
+        else
+          render :edit
+        end
+      else
+        flash.now[:danger] = 'Неверный пароль'
+        render :edit
+      end
+    elsif @current_user.try(:admin?)
+      if @user.update(user_params)
+        redirect_to @user, notice: 'Пользователь изменен.'
+      else
+        render :edit
+      end
     end
   end
 
@@ -69,8 +64,12 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    attrs = [:name, :email, :password, :password_confirmation, :country_id]
-    attrs << :role if @current_user.try(:admin?)
+    attrs = [:name, :email, :country_id, :info, :birthday]
+    if @user == @current_user
+      attrs += [:password, :password_confirmation]
+    elsif @current_user.try(:admin?)
+      attrs += [:role, :banned]
+    end
     params.require(:user).permit(attrs)
   end
 

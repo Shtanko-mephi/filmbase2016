@@ -1,15 +1,41 @@
 .page-header
-  %h1=@user.email
+  %h1
+    =@user.email
+    -if @user.banned
+      %span.text-danger
+        (заблокирован)
 .btn-toolbar
-  -if @user == @current_user
-    =link_to  edit_profile_user_path(@current_user), class: 'btn btn-primary' do
+  -if @user == @current_user || User.by_admin?(@current_user)
+    =link_to  edit_user_path(@user), class: 'btn btn-primary' do
       =fa_icon 'edit'
       Редактировать
-  =link_to @user, class: 'btn btn-danger', data: {method: :delete, confirm: t('helpers.sure')} do
-    =fa_icon 'trash'
-    Удалить
+  -if User.by_admin?(@current_user)
+    =link_to @user, class: 'btn btn-danger', data: {method: :delete, confirm: t('helpers.sure')} do
+      =fa_icon 'trash'
+      Удалить
+
 %dl
   %dt=User.human_attribute_name(:name)
   %dd=@user.name
+  -if @user.country
+    %dt=User.human_attribute_name(:country)
+    %dd=link_to @user.country.name,@user.country
+  -if @user.birthday
+    %dt=User.human_attribute_name(:birthday)
+    %dd=l(@user.birthday, format: :long)
+  -if @user.info
+    %dt=User.human_attribute_name(:info)
+    %dd=simple_format(@user.info)
   %dt=User.human_attribute_name(:role)
   %dd=@user.role_name
+
+
+-if (@user != @current_user) && (User.by_admin?(@current_user))
+  -if @user.banned
+    = form_for @user do |f|
+      = f.hidden_field :banned, :value => false
+      = f.submit 'Разблокировать', class: 'btn btn-success'
+  -else
+    = form_for @user do |f|
+      = f.hidden_field :banned, :value => true
+      = f.submit 'Заблокировать', class: 'btn btn-danger'

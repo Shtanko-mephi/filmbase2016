@@ -1,4 +1,6 @@
 ru:
+  cancel: Отменить
+  undo: Вернуть изменения
   app:
     name: Каталог видеофильмов
   helpers:
@@ -22,6 +24,10 @@ ru:
         password_confirmation: Пароль (повторно)
         old_password: Текущий пароль
         role: Роль
+        country: Страна
+        country_id: Страна
+        info: О себе
+        birthday: Дата рождения
       genre:
         name: Название
       country:
