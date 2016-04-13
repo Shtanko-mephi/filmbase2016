@@ -1,0 +1,10 @@
+= form_for @dialog do |f|
+  - if @dialog.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@dialog.errors.count, "error")} prohibited this dialog from being saved:"
+      %ul
+        - @dialog.errors.full_messages.each do |msg|
+          %li= msg
+
+  .actions
+    = f.submit 'Save'

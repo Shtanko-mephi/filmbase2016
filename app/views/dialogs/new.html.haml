@@ -1,0 +1,17 @@
+%h1 Новый диалог
+
+= form_for @dialog do |f|
+  = error_messages_for @dialog
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: 'form-control'
+  = f.fields_for :messages do |m_f|
+    .form-group
+      = m_f.label :content
+      = m_f.text_area :content, class: 'form-control'
+  .form-group
+    =f.label :user_tokens, Dialog.human_attribute_name(:users)
+    =f.text_field :user_tokens, data: {tokeninput:  users_path(format: :json), pre: @dialog.users.to_json}
+  .actions
+    = f.submit t('create'), class: 'btn btn-primary'
+    = link_to t('cancel'), dialogs_path, class: 'btn btn-default'

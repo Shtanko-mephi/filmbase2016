@@ -27,4 +27,10 @@ class ApplicationController < ActionController::Base
     session[:user_id] = user.id
   end
 
+  def check_banned
+    if @current_user.banned
+      render_error "Доступ запрещен", url: root_path
+    end
+  end
+
 end

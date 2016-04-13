@@ -1,0 +1,46 @@
+.page-header
+  %h1
+    Диалог '#{@dialog.title}'
+
+.panel.panel-default
+  .panel-heading
+    Сообщения
+  .panel-body.message-box
+    -@messages.each do |message|
+      .message-bubble
+        -if message.user
+          %div.message-top
+            =message.user.name
+          %div
+            -if message.user.avatar?
+              %div.inline.message-top
+                =image_tag message.user.avatar.url(:thumb), alt: 'avatar'
+            %div.inline
+              =message.content
+        -else
+          %div.message-top
+            .text-danger
+              (пользователь удален)
+          %div
+            %div.inline
+              =message.content
+
+= form_for @message do |f|
+  = error_messages_for @message
+  = f.hidden_field :dialog_id, :value => @dialog.id
+  .form-group
+    = f.label :content
+    = f.text_area :content, class: 'form-control'
+  .actions
+    = f.submit t('create'), class: 'btn btn-primary'
+    = link_to t('back'), dialogs_path, class: 'btn btn-default'
+
+-if @dialog.users.any?
+  %h3=Dialog.human_attribute_name(:users)
+  .list-group
+    -@dialog.users.each do |user|
+      =link_to user, class: 'list-group-item' do
+        =user.name
+        =surround ?(, ?) do
+          %i=user.email
+        %span.text-muted=user.role_name

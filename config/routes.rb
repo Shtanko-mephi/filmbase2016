@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :messages, :only => [:new, :create]
+  resources :dialogs, :except => [:edit, :update, :destroy]
   resources :films
   resources :people
   resources :countries

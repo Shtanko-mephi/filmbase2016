@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
+  before_action :check_authentication, only: [:edit, :update, :destroy]
+  before_action :check_banned, only: [:edit, :update, :destroy]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :check_admin, only: [:index, :destroy]
+  before_action :check_admin, only: [:destroy]
   before_action :check_admin_or_self, only: [:show, :edit, :update]
 
   def index
@@ -64,7 +66,7 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    attrs = [:name, :email, :country_id, :info, :birthday]
+    attrs = [:name, :email, :country_id, :info, :birthday, :avatar]
     if @user == @current_user
       attrs += [:password, :password_confirmation]
     elsif @current_user.try(:admin?)

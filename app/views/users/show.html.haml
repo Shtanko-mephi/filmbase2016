@@ -4,15 +4,28 @@
     -if @user.banned
       %span.text-danger
         (заблокирован)
-.btn-toolbar
-  -if @user == @current_user || User.by_admin?(@current_user)
-    =link_to  edit_user_path(@user), class: 'btn btn-primary' do
-      =fa_icon 'edit'
-      Редактировать
-  -if User.by_admin?(@current_user)
-    =link_to @user, class: 'btn btn-danger', data: {method: :delete, confirm: t('helpers.sure')} do
-      =fa_icon 'trash'
-      Удалить
+-if (!@current_user.banned)
+  .btn-toolbar
+    -if @user == @current_user || User.by_admin?(@current_user)
+      =link_to  edit_user_path(@user), class: 'btn btn-primary' do
+        =fa_icon 'edit'
+        Редактировать
+    -if User.by_admin?(@current_user)
+      =link_to @user, class: 'btn btn-danger', data: {method: :delete, confirm: t('helpers.sure')} do
+        =fa_icon 'trash'
+        Удалить
+  -if (@user != @current_user) && (User.by_admin?(@current_user))
+    -if @user.banned
+      = form_for @user do |f|
+        = f.hidden_field :banned, :value => false
+        = f.submit 'Разблокировать', class: 'btn btn-success'
+    -else
+      = form_for @user do |f|
+        = f.hidden_field :banned, :value => true
+        = f.submit 'Заблокировать', class: 'btn btn-danger'
+
+-if @user.avatar?
+  =image_tag @user.avatar.url(:medium), alt: 'avatar', class: 'img-responsive'
 
 %dl
   %dt=User.human_attribute_name(:name)
@@ -28,14 +41,3 @@
     %dd=simple_format(@user.info)
   %dt=User.human_attribute_name(:role)
   %dd=@user.role_name
-
-
--if (@user != @current_user) && (User.by_admin?(@current_user))
-  -if @user.banned
-    = form_for @user do |f|
-      = f.hidden_field :banned, :value => false
-      = f.submit 'Разблокировать', class: 'btn btn-success'
-  -else
-    = form_for @user do |f|
-      = f.hidden_field :banned, :value => true
-      = f.submit 'Заблокировать', class: 'btn btn-danger'

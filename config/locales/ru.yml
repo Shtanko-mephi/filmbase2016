@@ -1,5 +1,7 @@
 ru:
+  back: Назад
   cancel: Отменить
+  create: Создать
   undo: Вернуть изменения
   app:
     name: Каталог видеофильмов
@@ -28,6 +30,12 @@ ru:
         country_id: Страна
         info: О себе
         birthday: Дата рождения
+        avatar: Аватар
+      dialog:
+        title: Тема
+        users: Участники
+      message:
+        content: Сообщение
       genre:
         name: Название
       country:

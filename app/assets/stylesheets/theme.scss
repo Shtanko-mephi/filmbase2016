@@ -19,3 +19,34 @@ $font-size-base: 16px;
 .btn-toolbar {
   padding: $padding-large-vertical 0;
 }
+
+.message-box {
+  height: 500px;
+  overflow-y: scroll;
+  position : relative; bottom:0;
+}
+
+.message-bubble {
+  color:#555;
+  padding:10px 10px 10px 5px;
+  margin:5px 0px 5px 0px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background:#e3f7fc;
+  border:1px solid #8ed9f6;
+}
+
+.message-top {
+  border:1px solid #8ed9f6;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 2px;
+  margin: 2px;
+}
+
+.inline {
+  display: inline-block;
+  vertical-align: top;
+}
