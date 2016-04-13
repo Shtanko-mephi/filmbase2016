@@ -2,12 +2,12 @@ class DialogsController < ApplicationController
   before_action :check_authentication
   before_action :check_banned, only: [:new, :create]
   before_action :set_dialog, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_member, only: [:show]
 
   # GET /dialogs
   # GET /dialogs.json
   def index
-    @dialogs = Dialog.joins(:users).where('users.id' => @current_user.id).ordering.page(params[:page]).per(10)
+    @dialogs = @current_user.dialogs.ordering.page(params[:page]).per(10)
     #@dialogs = Dialog.joins(:users).where(:users => {:user_id => @current_user.id}).ordering.page(params[:page]).per(10)
   end
 
@@ -21,7 +21,7 @@ class DialogsController < ApplicationController
   # GET /dialogs/new
   def new
     @dialog = Dialog.new
-    @message = @dialog.messages.new
+    @message = @dialog.messages.build
   end
 
   # GET /dialogs/1/edit
@@ -68,6 +68,13 @@ class DialogsController < ApplicationController
   end
 
   private
+
+    def check_member
+      unless @dialog.users.any? {|user| user.id == @current_user.id}
+        render_error "Доступ запрещен", url: dialogs_path
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_dialog
       @dialog = Dialog.find(params[:id])

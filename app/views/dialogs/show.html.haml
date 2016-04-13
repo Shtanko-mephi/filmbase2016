@@ -2,45 +2,54 @@
   %h1
     Диалог '#{@dialog.title}'
 
-.panel.panel-default
-  .panel-heading
-    Сообщения
-  .panel-body.message-box
-    -@messages.each do |message|
-      .message-bubble
-        -if message.user
-          %div.message-top
-            =message.user.name
-          %div
-            -if message.user.avatar?
-              %div.inline.message-top
+.row
+  .col-md-3
+    -if @dialog.users.any?
+      %h3=Dialog.human_attribute_name(:users)
+      .list-group
+        -@dialog.users.each do |user|
+          =link_to user, class: 'list-group-item' do
+            =user.name
+            =surround ?(, ?) do
+              %i=user.email
+            %span.text-muted=user.role_name
+  .col-md-9
+    .panel.panel-default
+      .panel-heading
+        Сообщения
+      .panel-body.message-box#mess_id
+        -@messages.each do |message|
+          .media.message-bubble
+            .media-left
+              -if message.user && message.user.avatar?
                 =image_tag message.user.avatar.url(:thumb), alt: 'avatar'
-            %div.inline
-              =message.content
-        -else
-          %div.message-top
-            .text-danger
-              (пользователь удален)
-          %div
-            %div.inline
-              =message.content
+              -else
+                =fa_icon 'user 4x'
+            .media-body
+              .media-heading
+                -if message.user
+                  =message.user.name
+                -else
+                  .text-danger
+                    (пользователь удален)
+              =simple_format(message.content)
 
-= form_for @message do |f|
-  = error_messages_for @message
-  = f.hidden_field :dialog_id, :value => @dialog.id
-  .form-group
-    = f.label :content
-    = f.text_area :content, class: 'form-control'
-  .actions
-    = f.submit t('create'), class: 'btn btn-primary'
-    = link_to t('back'), dialogs_path, class: 'btn btn-default'
-
--if @dialog.users.any?
-  %h3=Dialog.human_attribute_name(:users)
-  .list-group
-    -@dialog.users.each do |user|
-      =link_to user, class: 'list-group-item' do
-        =user.name
-        =surround ?(, ?) do
-          %i=user.email
-        %span.text-muted=user.role_name
+    -if !@current_user.banned
+      -if @dialog.users.any? {|user| user != @current_user}
+        = form_for @message do |f|
+          = error_messages_for @message
+          = f.hidden_field :dialog_id, :value => @dialog.id
+          .form-group
+            = f.label :content
+            = f.text_area :content, class: 'form-control'
+          .actions
+            = f.submit t('create'), class: 'btn btn-primary'
+            = link_to t('back'), dialogs_path, class: 'btn btn-default'
+      -else
+        .text-danger
+          В беседе остался только один пользователь
+    -else
+      .text-danger
+        Пользователь
+        =@current_user.name
+        заблокирован и не может отправлять сообщения

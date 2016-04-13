@@ -10,7 +10,7 @@
       =link_to  edit_user_path(@user), class: 'btn btn-primary' do
         =fa_icon 'edit'
         Редактировать
-    -if User.by_admin?(@current_user)
+    -if User.by_admin?(@current_user) && @user != @current_user
       =link_to @user, class: 'btn btn-danger', data: {method: :delete, confirm: t('helpers.sure')} do
         =fa_icon 'trash'
         Удалить

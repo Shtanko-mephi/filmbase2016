@@ -6,7 +6,7 @@ class Dialog < ActiveRecord::Base
   scope :ordering,->{order('created_at DESC')}
 
   validates :title, presence: true, length: {minimum: 2, maximum: 255}
-  validates :users, presence: true
+  validates :users, presence: true, length: {minimum: 2, maximum: 200}
 
   attr_reader :user_tokens
 

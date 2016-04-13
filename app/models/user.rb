@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   has_secure_password
-  has_attached_file :avatar, styles: {medium: "250x250>", thumb: "100x100>"}
+  has_attached_file :avatar, styles: {medium: "250x250>", thumb: "60x60>"}
 
   belongs_to :country
   has_and_belongs_to_many :dialogs
@@ -18,6 +18,10 @@ validates_attachment :avatar, content_type: {content_type: /\Aimage\/.*\z/}
 before_validation :set_default_role
 
 scope :ordering,->{order(:name)}
+
+def self.search(query)
+  ordering.where("upper(name) like upper(:q)", q: "%#{query}%")
+end
 
 def set_default_role
   self.role||=0

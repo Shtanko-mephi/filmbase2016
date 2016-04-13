@@ -6,7 +6,10 @@ class UsersController < ApplicationController
   before_action :check_admin_or_self, only: [:show, :edit, :update]
 
   def index
-    @users = User.ordering.page(params[:page])
+    respond_to do |format|
+      format.html{@users = User.ordering.page(params[:page])}
+      format.json{@users = User.search(params[:q]).all}
+    end
   end
 
   def show
@@ -20,7 +23,7 @@ class UsersController < ApplicationController
   end
 
   def create
-      @user = User.new(user_params)
+      @user = User.new(user_params_pass)
     if @user.save
       if @current_user
         redirect_to @user, notice: 'Пользователь создан'
@@ -75,12 +78,20 @@ class UsersController < ApplicationController
     params.require(:user).permit(attrs)
   end
 
+  def user_params_pass
+    attrs = [:name, :email, :country_id, :info, :birthday, :avatar, :password, :password_confirmation]
+    if @current_user.try(:admin?)
+      attrs += [:role, :banned]
+    end
+    params.require(:user).permit(attrs)
+  end
+
   def check_admin_or_self
     render_error unless User.by_admin?(@current_user) || @user.by_self?(@current_user)
   end
 
   def check_admin
-    render_error unless User.by_admin?(@current_user)
+    render_error unless User.by_admin?(@current_user) && @user != @current_user
   end
 
   def check_self

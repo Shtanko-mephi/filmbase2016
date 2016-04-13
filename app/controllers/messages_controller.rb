@@ -28,6 +28,10 @@ class MessagesController < ApplicationController
   def create
     @dialog =  Dialog.find(message_params[:dialog_id])
     if @dialog && @dialog.users.any? {|user| user.id == @current_user.id}
+      if !@dialog.users.any? {|user| user != @current_user}
+        redirect_to dialog_path(message_params[:dialog_id]), notice: 'Нельзя отправлять сообщение самому себе'
+        return
+      end
       @message = Message.new(message_params)
       @message.update(:user_id => @current_user.id)
       if (@message.save)
